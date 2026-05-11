@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - UID Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: 
+                radial-gradient(ellipse at top, rgba(255, 0, 0, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(139, 0, 0, 0.2) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a0505 50%, #0a0a0a 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 3px,
+                    rgba(255, 0, 0, 0.04) 3px,
+                    rgba(255, 0, 0, 0.04) 6px
+                );
+            pointer-events: none;
+            z-index: 1;
+            animation: scan 8s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(6px); }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 24px 0;
+            border-bottom: 2px solid #ff0000;
+            box-shadow: 0 4px 30px rgba(255, 0, 0, 0.3);
+        }
+
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            font-weight: 800;
+            color: #ff0000;
+            text-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
+            animation: glow 2s ease-in-out infinite alternate;
+            letter-spacing: 3px;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 15px rgba(255, 0, 0, 0.6); }
+            to { text-shadow: 0 0 40px rgba(255, 0, 0, 1), 0 0 60px rgba(255, 0, 0, 0.5); }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: #888;
+            text-decoration: none;
+            font-size: 14px;
+            font-family: 'Orbitron', sans-serif;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        .nav-links a:hover {
+            color: #ff0000;
+            text-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+        }
+
+        .logout-btn {
+            padding: 10px 18px;
+            background: transparent;
+            color: #ff0000;
+            border: 1px solid #ff0000;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .logout-btn:hover {
+            background: #ff0000;
+            color: #000;
+            box-shadow: 0 0 25px rgba(255, 0, 0, 0.6);
+        }
+
+        .card {
+            background: linear-gradient(145deg, rgba(15, 15, 15, 0.95) 0%, rgba(26, 10, 10, 0.95) 100%);
+            border: 2px solid transparent;
+            border-image: linear-gradient(135deg, #ff0000, #cc0000, #990000) 1;
+            border-radius: 16px;
+            padding: 35px;
+            margin-bottom: 35px;
+            box-shadow: 
+                0 0 30px rgba(255, 0, 0, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .card h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 28px;
+            color: #ff0000;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            border-bottom: 2px solid rgba(255, 0, 0, 0.3);
+            padding-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #888;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid rgba(255, 0, 0, 0.3);
+            border-radius: 12px;
+            font-size: 18px;
+            background: rgba(10, 10, 10, 0.8);
+            color: #ff0000;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 600;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #ff0000;
+            box-shadow: 
+                0 0 25px rgba(255, 0, 0, 0.5),
+                inset 0 0 15px rgba(255, 0, 0, 0.1);
+            background: rgba(15, 15, 15, 0.95);
+        }
+
+        .btn {
+            padding: 14px 28px;
+            background: linear-gradient(145deg, #ff0000 0%, #cc0000 50%, #990000 100%);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 
+                0 0 20px rgba(255, 0, 0, 0.5),
+                inset 0 2px 0 rgba(255, 255, 255, 0.3),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:hover {
+            box-shadow: 0 0 35px rgba(255, 0, 0, 0.7);
+            transform: translateY(-3px) scale(1.02);
+        }
+
+        .btn:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        .btn.danger {
+            background: linear-gradient(145deg, #aa0000, #770000);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(170, 0, 0, 0.5);
+        }
+
+        .user-list {
+            margin-top: 20px;
+        }
+
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px;
+            background: linear-gradient(145deg, rgba(26, 10, 10, 0.9), rgba(15, 15, 15, 0.9));
+            border: 1px solid rgba(255, 0, 0, 0.5);
+            border-radius: 10px;
+            margin-bottom: 14px;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.15);
+            transition: all 0.3s;
+        }
+
+        .user-item:hover {
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.4);
+            border-color: #ff0000;
+            transform: translateX(5px);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-icon {
+            width: 40px;
+            height: 40px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: #ff0000;
+            background: rgba(255, 0, 0, 0.15);
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid #ff0000;
+            font-weight: 700;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .delete-btn {
+            padding: 10px 18px;
+            background: transparent;
+            color: #ff0000;
+            border: 1px solid #ff0000;
+            border-radius: 8px;
+            font-size: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .delete-btn:hover {
+            background: #ff0000;
+            color: #000;
+            box-shadow: 0 0 25px rgba(255, 0, 0, 0.6);
+        }
+
+        .result {
+            margin-top: 16px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .result.error {
+            display: block;
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff0000;
+            border: 1px solid #ff0000;
+            box-shadow: 
+                0 0 20px rgba(255, 0, 0, 0.4),
+                inset 0 0 15px rgba(255, 0, 0, 0.1);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .result.success {
+            display: block;
+            background: rgba(255, 0, 0, 0.15);
+            color: #ff0000;
+            border: 1px solid #ff0000;
+            box-shadow: 
+                0 0 25px rgba(255, 0, 0, 0.4),
+                inset 0 0 15px rgba(255, 0, 0, 0.1);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 10px;
+            padding: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ Admin Dashboard</h1>
+            <div class="nav-links">
+                <a href="index.html">UID Manager</a>
+                <button onclick="logout()" class="logout-btn">Logout</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Create License Key</h2>
+            <div style="display: flex; gap: 12px; margin-bottom: 20px;">
+                <button onclick="createKey('free')" class="btn" style="flex: 1; background: #444;">
+                    🔓 Generate FREE Key<br>
+                    <small style="font-size: 11px; color: #aaa;">(1 Day Max)</small>
+                </button>
+                <button onclick="createKey('client')" class="btn" style="flex: 1;">
+                    ⭐ Generate CLIENT Key<br>
+                    <small style="font-size: 11px; color: #aaa;">(30 Days Max)</small>
+                </button>
+            </div>
+            <div id="addResult" class="result"></div>
+            <div id="generatedKey" style="margin-top: 20px; padding: 16px; background: #111; border: 1px solid #00ff41; border-radius: 8px; display: none;">
+                <p style="color: #888; font-size: 12px; margin-bottom: 8px;">Generated Key (copy this):</p>
+                <p id="keyDisplay" style="color: #00ff41; font-size: 18px; font-weight: 600; font-family: monospace;"></p>
+                <p id="keyTypeDisplay" style="color: #666; font-size: 12px; margin-top: 8px;"></p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Manage License Keys</h2>
+            <div id="keyList" class="user-list">
+                <p style="color: #666; text-align: center;">Loading keys...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if admin is logged in (admin has maxDays >= 30)
+        const token = sessionStorage.getItem('authToken');
+        const maxDays = parseInt(sessionStorage.getItem('maxDays')) || 0;
+        
+        if (!token || maxDays < 30) {
+            alert('Admin access required!');
+            window.location.href = 'login.html';
+        }
+
+        // Load license keys
+        async function loadKeys() {
+            try {
+                const response = await fetch('/api/keys', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                if (!response.ok) throw new Error('Failed to load keys');
+                
+                const keys = await response.json();
+                displayKeys(keys);
+            } catch (error) {
+                document.getElementById('keyList').innerHTML = 
+                    '<p style="color: #ff4444; text-align: center;">Failed to load keys</p>';
+            }
+        }
+
+        function displayKeys(keys) {
+            const container = document.getElementById('keyList');
+            
+            if (keys.length === 0) {
+                container.innerHTML = '<p style="color: #666; text-align: center;">No keys found</p>';
+                return;
+            }
+            
+            container.innerHTML = keys.map(keyData => {
+                const isFree = keyData.keyType === 'free' || keyData.key.startsWith('FREE');
+                const typeBadge = isFree 
+                    ? '<span style="background: #444; color: #aaa; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 8px;">FREE</span>'
+                    : '<span style="background: #00ff41; color: #000; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 8px; font-weight: 600;">CLIENT</span>';
+                return `
+                <div class="user-item">
+                    <div class="user-info">
+                        <div class="user-icon">${isFree ? '🔓' : '⭐'}</div>
+                        <div>
+                            <div class="user-name" style="font-family: monospace; font-size: 14px;">${keyData.key}</div>
+                            <span class="user-role">Max ${keyData.maxDays} days</span>
+                            ${typeBadge}
+                            <span style="color: #666; font-size: 11px; margin-left: 8px;">${new Date(keyData.createdAt).toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                    <button onclick="deleteKey('${keyData.key}')" class="delete-btn">Delete</button>
+                </div>
+            `}).join('');
+        }
+
+        // Create key (free or client)
+        async function createKey(keyType) {
+            const resultDiv = document.getElementById('addResult');
+            const keyDisplayDiv = document.getElementById('generatedKey');
+            
+            try {
+                const response = await fetch('/api/keys', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ keyType: keyType })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to create key');
+                }
+                
+                resultDiv.className = 'result success';
+                resultDiv.textContent = keyType === 'free' ? 'FREE key generated! (1 Day Max)' : 'CLIENT key generated! (30 Days Max)';
+                
+                // Show generated key
+                document.getElementById('keyDisplay').textContent = data.key.key;
+                document.getElementById('keyTypeDisplay').textContent = `Type: ${data.key.keyType.toUpperCase()} | Max Days: ${data.key.maxDays}`;
+                keyDisplayDiv.style.display = 'block';
+                
+                // Reload key list
+                loadKeys();
+                
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = error.message;
+            }
+        }
+
+        // Delete key
+        async function deleteKey(key) {
+            if (!confirm(`Are you sure you want to delete this key?\n\n${key}\n\nDeleted keys cannot be used again!`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/keys/' + encodeURIComponent(key), {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.error || 'Failed to delete key');
+                }
+                
+                // Reload key list
+                loadKeys();
+                
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        // Logout
+        async function logout() {
+            try {
+                await fetch('/api/logout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token })
+                });
+            } catch (e) {}
+            
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Load keys on page load
+        loadKeys();
+    </script>
+</body>
+</html>

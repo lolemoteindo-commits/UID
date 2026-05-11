@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UID Manager</title>
+    <script>
+        // Check if user has valid session (from sessionStorage - cleared on tab close)
+        const authToken = sessionStorage.getItem('authToken');
+        if (!authToken) {
+            window.location.href = 'login.html';
+        }
+        
+        // Get max days allowed for this key
+        const maxDays = parseInt(sessionStorage.getItem('maxDays')) || 1;
+        
+        // Verify token with backend
+        fetch('/api/verify-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: authToken })
+        }).then(res => {
+            if (!res.ok) {
+                sessionStorage.clear();
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: 
+                radial-gradient(ellipse at top, rgba(255, 0, 0, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(139, 0, 0, 0.2) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a0505 50%, #0a0a0a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 3px,
+                    rgba(255, 0, 0, 0.04) 3px,
+                    rgba(255, 0, 0, 0.04) 6px
+                );
+            pointer-events: none;
+            z-index: 1;
+            animation: scan 8s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(6px); }
+        }
+
+        .container {
+            background: linear-gradient(145deg, rgba(15, 15, 15, 0.95) 0%, rgba(26, 10, 10, 0.95) 100%);
+            border: 2px solid transparent;
+            border-image: linear-gradient(135deg, #ff0000, #cc0000, #990000) 1;
+            border-radius: 20px;
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 
+                0 0 30px rgba(255, 0, 0, 0.4),
+                0 0 60px rgba(255, 0, 0, 0.2),
+                0 0 100px rgba(255, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 2;
+            backdrop-filter: blur(10px);
+        }
+
+        .container::before {
+            content: '◆ UID MANAGER ◆';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            color: #000;
+            padding: 6px 24px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            border-radius: 6px;
+            box-shadow: 
+                0 0 20px rgba(255, 0, 0, 0.6),
+                0 0 40px rgba(255, 0, 0, 0.3);
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 12px 18px;
+            background: linear-gradient(145deg, rgba(26, 10, 10, 0.9), rgba(15, 15, 15, 0.9));
+            border: 1px solid rgba(255, 0, 0, 0.5);
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
+        }
+
+        .user-badge {
+            font-size: 14px;
+            color: #ff0000;
+            font-weight: 700;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .logout-btn {
+            padding: 8px 14px;
+            background: transparent;
+            color: #ff0000;
+            border: 1px solid #ff0000;
+            border-radius: 8px;
+            font-size: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .logout-btn:hover {
+            background: #ff0000;
+            color: #000;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        }
+
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #fff 0%, #ff0000 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
+        }
+
+        .header p {
+            color: #ff6666;
+            font-size: 16px;
+            font-weight: 500;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #888888;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid rgba(255, 0, 0, 0.3);
+            border-radius: 12px;
+            font-size: 18px;
+            background: rgba(10, 10, 10, 0.8);
+            color: #ff0000;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 600;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #ff0000;
+            box-shadow: 
+                0 0 25px rgba(255, 0, 0, 0.5),
+                inset 0 0 15px rgba(255, 0, 0, 0.1);
+            background: rgba(15, 15, 15, 0.95);
+        }
+
+        .form-group input::placeholder {
+            color: #663333;
+            font-weight: 500;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(145deg, #ff0000 0%, #cc0000 50%, #990000 100%);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            box-shadow: 
+                0 0 25px rgba(255, 0, 0, 0.5),
+                0 0 50px rgba(255, 0, 0, 0.3),
+                inset 0 2px 0 rgba(255, 255, 255, 0.3),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: 0.6s;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:hover {
+            box-shadow: 
+                0 0 40px rgba(255, 0, 0, 0.7),
+                0 0 80px rgba(255, 0, 0, 0.4);
+            transform: translateY(-3px) scale(1.02);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        .submit-btn.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #000000;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        .submit-btn.loading .spinner {
+            display: block;
+        }
+
+        .submit-btn.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 14px 16px;
+            border-radius: 8px;
+            display: none;
+            font-size: 14px;
+        }
+
+        .result.error {
+            display: block;
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff0000;
+            border: 1px solid #ff0000;
+            box-shadow: 
+                0 0 20px rgba(255, 0, 0, 0.4),
+                inset 0 0 15px rgba(255, 0, 0, 0.1);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .result.success {
+            display: block;
+            background: rgba(255, 0, 0, 0.15);
+            color: #ff0000;
+            border: 1px solid #ff0000;
+            box-shadow: 
+                0 0 25px rgba(255, 0, 0, 0.4),
+                inset 0 0 15px rgba(255, 0, 0, 0.1);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .result-message {
+            color: #aaaaaa;
+            line-height: 1.5;
+            font-size: 13px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 28px;
+            color: #ff6666;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            opacity: 0.8;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="user-info">
+                <span class="user-badge">User: <span id="userKey" style="color: #ff0000; font-weight: 700;">Unknown</span></span>
+                <a href="admin-dashboard.html" id="adminLink" style="display: none; color: #ff0000; font-size: 12px; text-decoration: none; margin-right: 10px; font-weight: 700; text-transform: uppercase;">⚡ Admin</a>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+            <h1>UID Manager</h1>
+            <p>Add days to user account</p>
+        </div>
+
+        <form id="uidForm">
+            <div class="form-group">
+                <label for="uid">User ID (UID)</label>
+                <input type="text" id="uid" name="uid" placeholder="Enter UID (e.g., 7670617627)" required>
+            </div>
+
+            <div class="form-group">
+                <label for="days" style="font-family: 'Orbitron', sans-serif; color: #ff6666; font-size: 13px; font-weight: 600; letter-spacing: 2px;">Days to Add (Max: <span id="maxDaysLabel" style="color: #ff0000; font-weight: 700;">1</span>)</label>
+                <input type="number" id="days" name="days" value="1" min="1" max="30" required>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+                <span class="spinner"></span>
+                <span class="btn-text">Add Days</span>
+            </button>
+        </form>
+
+        <div id="result" class="result">
+            <div class="result-title" id="resultTitle">Result</div>
+            <div class="result-message" id="resultMessage"></div>
+        </div>
+
+        <div class="footer">
+            UID Management System
+        </div>
+    </div>
+
+    <script>
+        // Show max days from license key
+        const userMaxDays = parseInt(sessionStorage.getItem('maxDays')) || 1;
+        document.getElementById('maxDaysLabel').textContent = userMaxDays;
+        document.getElementById('days').max = userMaxDays;
+        
+        // Check if admin (maxDays = 30 means admin key)
+        if (userMaxDays >= 30) {
+            document.getElementById('userKey').textContent = 'Admin';
+            document.getElementById('adminLink').style.display = 'inline';
+        } else {
+            document.getElementById('userKey').textContent = 'User (Max ' + userMaxDays + ' days)';
+        }
+
+        // Logout function
+        async function logout() {
+            const token = sessionStorage.getItem('authToken');
+            
+            // Call logout endpoint
+            try {
+                await fetch('/api/logout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token })
+                });
+            } catch (e) {
+                // Ignore error
+            }
+            
+            // Clear sessionStorage (not localStorage) - forces re-login with key
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        const form = document.getElementById('uidForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const result = document.getElementById('result');
+        const resultTitle = document.getElementById('resultTitle');
+        const resultMessage = document.getElementById('resultMessage');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const uid = document.getElementById('uid').value.trim();
+            const days = document.getElementById('days').value;
+
+            // Show loading state
+            submitBtn.classList.add('loading');
+            result.className = 'result';
+
+            try {
+                const token = sessionStorage.getItem('authToken');
+                
+                // Check if trying to add more than allowed
+                const userMaxDays = parseInt(sessionStorage.getItem('maxDays')) || 1;
+                if (parseInt(days) > userMaxDays) {
+                    throw new Error(`You can only add up to ${userMaxDays} days with this key`);
+                }
+                
+                // Call backend API with auth token
+                const response = await fetch('/api/add-days', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ uid, days })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Request failed');
+                }
+
+                // Show success
+                result.className = 'result success';
+                resultTitle.textContent = 'Success';
+                resultMessage.textContent = `UID: ${data.uid} | Days: ${data.days} | Response: ${data.response}`;
+
+            } catch (error) {
+                // Show error
+                result.className = 'result error';
+                resultTitle.textContent = 'Error';
+                resultMessage.textContent = error.message;
+                
+                // Redirect to login if unauthorized
+                if (error.message === 'Unauthorized') {
+                    setTimeout(() => {
+                        logout();
+                    }, 2000);
+                }
+            } finally {
+                submitBtn.classList.remove('loading');
+            }
+        });
+    </script>
+</body>
+</html>

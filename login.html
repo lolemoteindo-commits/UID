@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - UID Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: 
+                radial-gradient(ellipse at top, rgba(255, 0, 0, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(139, 0, 0, 0.2) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a0505 50%, #0a0a0a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 3px,
+                    rgba(255, 0, 0, 0.04) 3px,
+                    rgba(255, 0, 0, 0.04) 6px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 3px,
+                    rgba(255, 0, 0, 0.02) 3px,
+                    rgba(255, 0, 0, 0.02) 6px
+                );
+            pointer-events: none;
+            z-index: 1;
+            animation: scan 8s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(6px); }
+        }
+
+        .container {
+            background: 
+                linear-gradient(145deg, rgba(15, 15, 15, 0.95) 0%, rgba(26, 10, 10, 0.95) 100%);
+            border: 2px solid transparent;
+            border-image: linear-gradient(135deg, #ff0000, #cc0000, #990000) 1;
+            border-radius: 20px;
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 
+                0 0 30px rgba(255, 0, 0, 0.4),
+                0 0 60px rgba(255, 0, 0, 0.2),
+                0 0 100px rgba(255, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 2;
+            backdrop-filter: blur(10px);
+        }
+
+        .container::before {
+            content: '◆ SECURE ACCESS ◆';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            color: #000;
+            padding: 6px 24px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            border-radius: 6px;
+            box-shadow: 
+                0 0 20px rgba(255, 0, 0, 0.6),
+                0 0 40px rgba(255, 0, 0, 0.3);
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .header .logo {
+            width: 90px;
+            height: 90px;
+            background: 
+                linear-gradient(145deg, #ff0000 0%, #cc0000 50%, #990000 100%);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 24px;
+            font-size: 42px;
+            color: #000;
+            box-shadow: 
+                0 0 30px rgba(255, 0, 0, 0.6),
+                0 0 60px rgba(255, 0, 0, 0.4),
+                0 0 90px rgba(255, 0, 0, 0.2),
+                inset 0 -3px 0 rgba(0, 0, 0, 0.4),
+                inset 0 3px 0 rgba(255, 255, 255, 0.2);
+            animation: pulse-glow 2s ease-in-out infinite;
+            border: 3px solid rgba(255, 0, 0, 0.8);
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { 
+                box-shadow: 0 0 30px rgba(255, 0, 0, 0.6), 0 0 60px rgba(255, 0, 0, 0.4), 0 0 90px rgba(255, 0, 0, 0.2);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 50px rgba(255, 0, 0, 0.9), 0 0 90px rgba(255, 0, 0, 0.6), 0 0 130px rgba(255, 0, 0, 0.4);
+                transform: scale(1.02);
+            }
+        }
+
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #fff 0%, #ff0000 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
+        }
+
+        .header p {
+            color: #ff6666;
+            font-size: 16px;
+            font-weight: 500;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .info-box {
+            background: linear-gradient(145deg, rgba(26, 10, 10, 0.9), rgba(15, 15, 15, 0.9));
+            border: 1px solid rgba(255, 0, 0, 0.5);
+            border-left: 4px solid #ff0000;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 28px;
+            box-shadow: 
+                0 0 20px rgba(255, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #ff0000, transparent);
+        }
+
+        .info-box h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: #ff0000;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .info-box p {
+            color: #ff9999;
+            font-size: 15px;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #ff6666;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid rgba(255, 0, 0, 0.3);
+            border-radius: 12px;
+            font-size: 18px;
+            background: rgba(10, 10, 10, 0.8);
+            color: #ff0000;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 600;
+            letter-spacing: 3px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #ff0000;
+            box-shadow: 
+                0 0 25px rgba(255, 0, 0, 0.5),
+                inset 0 0 15px rgba(255, 0, 0, 0.1);
+            background: rgba(15, 15, 15, 0.95);
+        }
+
+        .form-group input::placeholder {
+            color: #663333;
+            text-transform: none;
+            font-weight: 500;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(145deg, #ff0000 0%, #cc0000 50%, #990000 100%);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            box-shadow: 
+                0 0 25px rgba(255, 0, 0, 0.5),
+                0 0 50px rgba(255, 0, 0, 0.3),
+                inset 0 2px 0 rgba(255, 255, 255, 0.3),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: 0.6s;
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
+        .login-btn:hover {
+            box-shadow: 
+                0 0 40px rgba(255, 0, 0, 0.7),
+                0 0 80px rgba(255, 0, 0, 0.4);
+            transform: translateY(-3px) scale(1.02);
+        }
+
+        .login-btn:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        .login-btn.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #000000;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+            margin: 0 auto;
+        }
+
+        .login-btn.loading .spinner {
+            display: block;
+        }
+
+        .login-btn.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .result {
+            margin-top: 16px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .result.error {
+            display: block;
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff0000;
+            border: 1px solid #ff0000;
+            box-shadow: 
+                0 0 20px rgba(255, 0, 0, 0.4),
+                inset 0 0 15px rgba(255, 0, 0, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+            font-family: 'Orbitron', sans-serif;
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .result.success {
+            display: block;
+            background: rgba(255, 0, 0, 0.15);
+            color: #ff0000;
+            border: 1px solid #ff0000;
+            box-shadow: 
+                0 0 25px rgba(255, 0, 0, 0.4),
+                inset 0 0 15px rgba(255, 0, 0, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+            font-family: 'Orbitron', sans-serif;
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 28px;
+            color: #ff6666;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            opacity: 0.8;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">⚡</div>
+            <h1>UID Manager</h1>
+            <p>Sign in to continue</p>
+        </div>
+
+        <div class="info-box">
+            <h3>Welcome!</h3>
+            <p>Enter your license key to access UID Manager.</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="licenseKey">License Key</label>
+                <input type="text" id="licenseKey" name="licenseKey" placeholder="XXXX-XXXX-XXXX-XXXX" required autocomplete="off">
+            </div>
+
+            <button type="submit" class="login-btn" id="loginBtn">
+                <span class="spinner"></span>
+                <span class="btn-text">Access System</span>
+            </button>
+        </form>
+
+        <div id="result" class="result"></div>
+
+        <div class="footer">
+            UID Management System
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const result = document.getElementById('result');
+
+        // No auto-login - always require key
+        // Clear any old session data
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('maxDays');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const licenseKey = document.getElementById('licenseKey').value.trim().toUpperCase();
+
+            loginBtn.classList.add('loading');
+            result.className = 'result';
+
+            try {
+                const response = await fetch('/api/validate-key', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ key: licenseKey })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Invalid license key');
+                }
+
+                // Store session token temporarily (will be cleared on logout)
+                sessionStorage.setItem('authToken', data.token);
+                sessionStorage.setItem('maxDays', data.maxDays);
+
+                result.className = 'result success';
+                result.textContent = 'Access granted! Redirecting...';
+
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+
+            } catch (error) {
+                result.className = 'result error';
+                result.textContent = error.message;
+                loginBtn.classList.remove('loading');
+            }
+        });
+    </script>
+</body>
+</html>
